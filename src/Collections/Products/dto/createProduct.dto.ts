@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsDate, IsNumber, IsString } from 'class-validator';
 
 export class CreateProductDto {
     @IsNumber()
@@ -15,9 +15,6 @@ export class CreateProductDto {
 
     @IsNumber()
     private PriceSales: number;
-
-    @IsNumber()
-    private CreatAt: Date;
 
     @IsNumber()
     private BrandId: number;

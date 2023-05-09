@@ -25,7 +25,7 @@ export class Product {
     @Prop({ default: false })
     isOld: boolean;
 
-    @Prop({ type: mongoose.Schema.Types.Date })
+    @Prop({ default: new Date() })
     createdAt: Date;
     //attributes
     @Prop({ ref: 'Brand' })

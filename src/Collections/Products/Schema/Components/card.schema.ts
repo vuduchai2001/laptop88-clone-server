@@ -13,6 +13,9 @@ export class Card {
     @Prop()
     code: string;
 
+    @Prop({ ref: 'Card' })
+    parentId: number;
+
 }
 
 export type CardDocument = HydratedDocument<Card>;

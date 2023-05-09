@@ -13,6 +13,9 @@ export class Screen {
     @Prop()
     code: string;
 
+    @Prop({ ref: 'Screen' })
+    parentId: number;
+
 }
 
 export type ScreenDocument = HydratedDocument<Screen>;

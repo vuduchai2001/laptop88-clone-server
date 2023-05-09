@@ -13,6 +13,10 @@ export class CPU {
     @Prop()
     code: string;
 
+    @Prop({ ref: 'CPU' })
+    parentId: number;
+
+
 }
 
 export type CPUDocument = HydratedDocument<CPU>;
