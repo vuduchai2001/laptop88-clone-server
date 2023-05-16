@@ -1,7 +1,7 @@
 import { GenericService } from "src/Generic/generic.service";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Injectable, Req } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Product } from "./Schema/product.schema";
 
 @Injectable()
@@ -9,21 +9,6 @@ export class ProductService extends GenericService<Product> {
     constructor(@InjectModel(Product.name) private productService: Model<Product>) {
         super(productService);
     }
-
-    // async getWithPoPu() {
-    //     return await this.productService.find().populate('CPUId').populate('CPUId.parentId');
-    // }
-
-    // async paging(page: number, limit: number) {
-    //     const [result, currentPage, totalCount] = await Promise.all([this.productService.find().populate(['CPUId', 'BrandId', 'CardId', 'HardDriveId', 'RAMId', 'ScreenId', 'SeriesId', 'SpectId']).skip((page - 1) * limit).limit(limit), page, this.productService.countDocuments()])
-    //     return {
-    //         data: result,
-    //         currentPage: Number(currentPage),
-    //         totalPage: Math.ceil(totalCount / limit)
-    //     }
-    // }
-
-
 
     async filter(query: any) {
         const conditions: any = {};
@@ -121,34 +106,5 @@ export class ProductService extends GenericService<Product> {
             }
 
         }
-        // if (query.sort === 'price-asc') {
-        //     result.sort((a, b) => a.PriceSales - b.PriceSales)
-        // }
-
-
-        // else if (query.sort === 'price-desc') {
-        //     result.sort((a, b) => b.PriceSales - a.PriceSales)
-        // }
-
-        // else if (query.sort === 'price') {
-        //     result.sort((a, b) => a.PriceSales - b.PriceSales)
-        // }
-
-        // else if (query.sort === 'name') {
-        //     result.sort((a, b) => {
-        //         if (a.name < b.name) {
-        //             return -1;
-        //         }
-        //         if (a.name > b.name) {
-        //             return 1;
-        //         }
-        //         return 0;
-        //     })
-        // }
-
-        // else if (query.sort === 'new') {
-        //     result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        // }
-
     }
 }

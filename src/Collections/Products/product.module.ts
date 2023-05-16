@@ -14,7 +14,10 @@ import { Spect, SpectSchema } from "./Schema/Components/spect.schema";
 
 
 @Module({
-    imports: [MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }, { name: Card.name, schema: CardSchema }, { name: CPU.name, schema: CPUSchema }, { name: HardDrive.name, schema: HardDriveSchema }, { name: RAM.name, schema: RAMSchema }, { name: Screen.name, schema: ScreenSchema }, { name: Series.name, schema: SeriesSchema }, { name: Spect.name, schema: SpectSchema }, { name: Brand.name, schema: BrandSchema }])],
+    imports: [MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }, { name: Card.name, schema: CardSchema },
+    { name: CPU.name, schema: CPUSchema }, { name: HardDrive.name, schema: HardDriveSchema }, { name: RAM.name, schema: RAMSchema },
+    { name: Screen.name, schema: ScreenSchema }, { name: Series.name, schema: SeriesSchema }, { name: Spect.name, schema: SpectSchema },
+    { name: Brand.name, schema: BrandSchema }])],
     controllers: [ProductController],
     providers: [ProductService],
 })
