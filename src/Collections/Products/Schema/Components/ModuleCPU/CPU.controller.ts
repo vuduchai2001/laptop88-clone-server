@@ -5,5 +5,4 @@ import { CPUService } from "./CPU.service";
 @Controller('cpu')
 export class CPUController {
     constructor(private readonly brandService: CPUService) { }
-
 }

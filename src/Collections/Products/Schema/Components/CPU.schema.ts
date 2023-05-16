@@ -13,12 +13,11 @@ export class CPU {
     @Prop()
     code: string;
 
-    @Prop({ ref: 'CPU' })
+    @Prop( { ref: 'CPU' } )
     parentId: number;
-
 
 }
 
 export type CPUDocument = HydratedDocument<CPU>;
 
-export const CPUSchema = SchemaFactory.createForClass(CPU);
+export const CPUSchema = SchemaFactory.createForClass( CPU );
