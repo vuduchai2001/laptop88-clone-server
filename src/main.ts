@@ -3,13 +3,13 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as cors from 'cors';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
-  app.use(cors({
+async function bootstrap () {
+  const app = await NestFactory.create( AppModule );
+  app.useGlobalPipes( new ValidationPipe() );
+  app.use( cors( {
     origin: 'http://localhost:3005',
     allowedHeaders: 'Content-Type, Accept',
-  }));
-  await app.listen(3000);
+  } ) );
+  await app.listen( 3000, () => { } );
 }
 bootstrap();
