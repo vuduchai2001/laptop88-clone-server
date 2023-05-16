@@ -6,10 +6,12 @@ import { CPUService } from "./CPU.service";
 export class CPUController {
     constructor(private readonly brandService: CPUService) { }
 
-    @Get('index')
-    async getAll() {
-        return await this.brandService.getWithPoPu();
-    }
+    // @Get('index')
+    // async getAll() {
+    //     return await this.brandService.getWithPoPu();
+    // }
+
+
 
     // @Post('create')
     // async create(@Body() createBrandDto: CreateBrandDto): Promise<Brand> {

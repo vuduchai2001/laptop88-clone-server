@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { HydratedDocument } from "mongoose";
+import { CPU } from "./Components/CPU.schema";
 
 @Schema()
 export class Product {

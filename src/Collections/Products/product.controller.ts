@@ -11,7 +11,10 @@ export class ProductController {
 
     @Get('index')
     async getAll() {
-        return await this.productService.getWithPoPu();
+
+        const data = await this.productService.getAll();
+        console.log(data);
+        return data;
     }
 
     @Post('create')
@@ -19,22 +22,24 @@ export class ProductController {
         return await this.productService.create(createProductDto);
     }
 
-    @Get('paging')
-    async getPaging(@Query() query: { page: number, limit: number }) {
-        return await this.productService.paging(query.page, query.limit);
-    }
-
-    @Get('search')
-    async search(@Query() query: any) {
-        return await this.productService.search(query.keyword, query.price, query.page, query.limit);
-    }
-
     @Get('filter')
     async filter(@Query() query: any) {
-        console.log(query);
 
         return await this.productService.filter(query);
+
     }
+
+    // @Get('paging')
+    // async getPaging(@Query() query: { page: number, limit: number }) {
+    //     return await this.productService.paging(query.page, query.limit);
+    // }
+
+    // @Get('search')
+    // async search(@Query() query: any) {
+    //     return await this.productService.search(query.keyword, query.page);
+    // }
+
+
 
     // @Get('getbyid')
     // async getById(@Query() query: { id: string }): Promise<Brand> {
