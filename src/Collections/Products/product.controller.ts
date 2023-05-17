@@ -8,9 +8,17 @@ export class ProductController {
     constructor ( private readonly productService: ProductService ) { }
 
     @Get( 'index' )
-    async getAll () {
-        const data = [ 'Hai', 'Tien' ];
-        return data;
+    async getAll ( @Query() query: { id: number } ) {
+        console.log( query );
+
+        return this.productService.queryByCPU( Number( query.id ) );
+    }
+
+    @Get( 'getparentId' )
+    async getparentId ( @Query() query: { id: number, filter: string } ) {
+        console.log( query );
+
+        return this.productService.queryByCPU( Number( query.id ) );
     }
 
     @Post( 'create' )

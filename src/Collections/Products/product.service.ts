@@ -1,17 +1,43 @@
+import { CPUService } from './Schema/Components/ModuleCPU/CPU.service';
 import { GenericService } from "src/Generic/generic.service";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Injectable } from "@nestjs/common";
 import { Product } from "./Schema/product.schema";
+import { CPU } from './Schema/Components/CPU.schema';
+import { Card } from './Schema/Components/card.schema';
+import { Screen } from './Schema/Components/screen.schema';
 
 @Injectable()
 export class ProductService extends GenericService<Product> {
-    constructor ( @InjectModel( Product.name ) private productService: Model<Product> ) {
-        super( productService );
+    constructor (
+        @InjectModel( Product.name ) private productRepo: Model<Product>,
+        @InjectModel( CPU.name ) private CPURepo: Model<CPU>,
+        @InjectModel( Card.name ) private cardRepo: Model<Card>,
+        @InjectModel( Screen.name ) private screenRepo: Model<Screen>,
+    ) {
+        super( productRepo );
     }
 
+    async queryByCPU ( id: number ) {
+        const data = await this.CPURepo.find();
+        const arr = [];
+        data.map( ( item ) => {
+            if ( item.parentId === id )
+            {
+                arr.push( item._id );
+            }
+        } )
+        var result = [];
+        for ( let i = 0; i < arr.length; i++ )
+        {
+            result.push( await this.productRepo.find( { "CPUId": arr } ) );
+        }
+        return result;
+    }
 
     async filter ( query: any ) {
+
         const conditions: any = {};
 
         if ( query.name )
@@ -31,13 +57,12 @@ export class ProductService extends GenericService<Product> {
 
         if ( query.Price )
         {
-            conditions.Price = { $gte: query.Price };
+            conditions.Price = { $gte: query.Price, $lte: query.Pricemax };
         };
 
         if ( query.PriceSales )
         {
             conditions.PriceSales = { $gte: query.PriceSales, $lte: query.PriceSalesmax };
-
         };
 
         if ( query.BrandId )
@@ -45,15 +70,40 @@ export class ProductService extends GenericService<Product> {
             conditions.BrandId = query.BrandId;
         };
 
-
         if ( query.CardId )
         {
-            conditions.CardId = query.CardId;
+            let arr = [];
+            const data = await this.cardRepo.find();
+            data.map( ( item ) => {
+                if ( item.parentId === Number( query.CardId ) )
+                {
+                    arr.push( item._id );
+                }
+            } )
+            let result = [];
+            for ( let i = 0; i < arr.length; ++i )
+            {
+                result.push( arr[ i ] );
+            }
+            conditions.CardId = result;
         };
 
         if ( query.CPUId )
         {
-            conditions.CPUId = query.CPUId;
+            let arr = [];
+            const data = await this.CPURepo.find();
+            data.map( ( item ) => {
+                if ( item.parentId === Number( query.CPUId ) )
+                {
+                    arr.push( item._id );
+                }
+            } )
+            let result = [];
+            for ( let i = 0; i < arr.length; ++i )
+            {
+                result.push( arr[ i ] );
+            }
+            conditions.CPUId = result;
         };
 
         if ( query.RAMId )
@@ -63,7 +113,20 @@ export class ProductService extends GenericService<Product> {
 
         if ( query.ScreenId )
         {
-            conditions.ScreenId = query.ScreenId;
+            let arr = [];
+            const data = await this.screenRepo.find();
+            data.map( ( item ) => {
+                if ( item.parentId === Number( query.ScreenId ) )
+                {
+                    arr.push( item._id );
+                }
+            } )
+            let result = [];
+            for ( let i = 0; i < arr.length; ++i )
+            {
+                result.push( arr[ i ] );
+            }
+            conditions.ScreenId = result;
         };
 
         if ( query.SeriesId )
@@ -86,13 +149,31 @@ export class ProductService extends GenericService<Product> {
             query.page = 1;
         };
 
-        query.limit = 5;
-        const sortBy = 'PriceSales';
-        type SortOrder = 'asc' | 'desc';
-        const sortOrder: SortOrder = query.sort === 'desc' ? 'desc' : 'asc';
-        if ( query.sort === 'asc' || query.sort === 'desc' )
+        if ( !query.sort )
         {
-            const [ result, currentPage, totalCount ] = await Promise.all( [ this.productService.find( conditions ).populate( [ 'BrandId', 'CardId', 'HardDriveId', 'RAMId', 'ScreenId', 'SeriesId', 'SpectId', 'CPUId' ] ).sort( { [ sortBy ]: sortOrder == 'desc' ? -1 : 1 } ).skip( ( query.page - 1 ) * query.limit ).limit( query.limit ), query.page, ( await this.productService.find( conditions ) ).length ] )
+            query.sort = 'asc';
+        };
+
+        query.limit = 5;
+        if ( query.sort === 'asc' )
+        {
+            const [ result, currentPage, totalCount ] = await Promise.all( [ this.productRepo.find( conditions )
+                .populate( [ 'BrandId', 'CardId', 'HardDriveId', 'RAMId', 'ScreenId', 'SeriesId', 'SpectId', 'CPUId' ] )
+                .sort( { PriceSales: 1 } ).skip( ( query.page - 1 ) * query.limit )
+                .limit( query.limit ), query.page, ( await this.productRepo.find( conditions ) ).length ] )
+            return {
+                data: result,
+                currentPage: Number( currentPage ),
+                totalCount: totalCount,
+                totalPage: Math.ceil( totalCount / query.limit )
+            }
+        }
+        if ( query.sort === 'desc' )
+        {
+            const [ result, currentPage, totalCount ] = await Promise.all( [ this.productRepo.find( conditions )
+                .populate( [ 'BrandId', 'CardId', 'HardDriveId', 'RAMId', 'ScreenId', 'SeriesId', 'SpectId', 'CPUId' ] )
+                .sort( { PriceSales: -1 } ).skip( ( query.page - 1 ) * query.limit )
+                .limit( query.limit ), query.page, ( await this.productRepo.find( conditions ) ).length ] )
             return {
                 data: result,
                 currentPage: Number( currentPage ),
@@ -102,7 +183,10 @@ export class ProductService extends GenericService<Product> {
         }
         else if ( query.sort === 'name' )
         {
-            const [ result, currentPage, totalCount ] = await Promise.all( [ this.productService.find( conditions ).populate( [ 'BrandId', 'CardId', 'HardDriveId', 'RAMId', 'ScreenId', 'SeriesId', 'SpectId', 'CPUId' ] ).sort( { name: 1 } ).skip( ( query.page - 1 ) * query.limit ).limit( query.limit ), query.page, ( await this.productService.find( conditions ) ).length ] )
+            const [ result, currentPage, totalCount ] = await Promise.all( [ this.productRepo.find( conditions )
+                .populate( [ 'BrandId', 'CardId', 'HardDriveId', 'RAMId', 'ScreenId', 'SeriesId', 'SpectId', 'CPUId' ] )
+                .sort( { name: 1 } ).skip( ( query.page - 1 ) * query.limit )
+                .limit( query.limit ), query.page, ( await this.productRepo.find( conditions ) ).length ] )
             return {
                 data: result,
                 currentPage: Number( currentPage ),
@@ -113,15 +197,16 @@ export class ProductService extends GenericService<Product> {
         }
         else if ( query.sort === 'new' )
         {
-            const [ result, currentPage, totalCount ] = await Promise.all( [ this.productService.find( conditions ).populate( [ 'BrandId', 'CardId', 'HardDriveId', 'RAMId', 'ScreenId', 'SeriesId', 'SpectId', 'CPUId' ] ).sort( { createAt: 1 } ).skip( ( query.page - 1 ) * query.limit ).limit( query.limit ), query.page, ( await this.productService.find( conditions ) ).length ] )
-
+            const [ result, currentPage, totalCount ] = await Promise.all( [ this.productRepo.find( query )
+                .populate( [ 'BrandId', 'CardId', 'HardDriveId', 'RAMId', 'ScreenId', 'SeriesId', 'SpectId', 'CPUId' ] )
+                .sort( { createAt: 1 } ).skip( ( query.page - 1 ) * query.limit )
+                .limit( query.limit ), query.page, ( await this.productRepo.find( query ) ).length ] )
             return {
                 data: result,
                 currentPage: Number( currentPage ),
                 totalCount: totalCount,
                 totalPage: Math.ceil( totalCount / query.limit )
             }
-
         }
     }
 }
