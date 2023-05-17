@@ -12,7 +12,7 @@ async function bootstrap () {
       allowedHeaders: 'Content-Type, Accept',
     },
     {
-      origin: 'https://laptop99.netlify.app/',
+      origin: 'https://laptop99.netlify.app',
       allowedHeaders: 'Content-Type, Accept',
     }
   ] ) );
