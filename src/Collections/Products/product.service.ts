@@ -7,6 +7,7 @@ import { Product } from "./Schema/product.schema";
 import { CPU } from './Schema/Components/CPU.schema';
 import { Card } from './Schema/Components/card.schema';
 import { Screen } from './Schema/Components/screen.schema';
+import { productSaleDto } from './dto/productSale.dto';
 
 @Injectable()
 export class ProductService extends GenericService<Product> {
@@ -19,21 +20,8 @@ export class ProductService extends GenericService<Product> {
         super( productRepo );
     }
 
-    async queryByCPU ( id: number ) {
-        const data = await this.CPURepo.find();
-        const arr = [];
-        data.map( ( item ) => {
-            if ( item.parentId === id )
-            {
-                arr.push( item._id );
-            }
-        } )
-        var result = [];
-        for ( let i = 0; i < arr.length; i++ )
-        {
-            result.push( await this.productRepo.find( { "CPUId": arr } ) );
-        }
-        return result;
+    async getSaleProduct ( product: productSaleDto ): Promise<productSaleDto[]> {
+        return await this.productRepo.find();
     }
 
     async filter ( query: any ) {
@@ -48,12 +36,12 @@ export class ProductService extends GenericService<Product> {
         if ( query.isSale )
         {
             conditions.isSale = query.isSale;
-        }
+        };
 
         if ( query.isOld )
         {
             conditions.isOld = query.isOld;
-        }
+        };
 
         if ( query.Price )
         {
@@ -151,10 +139,12 @@ export class ProductService extends GenericService<Product> {
 
         if ( !query.sort )
         {
-            query.sort = 'asc';
+            query.sort = 'new';
         };
 
         query.limit = 5;
+        console.log( query );
+
         if ( query.sort === 'asc' )
         {
             const [ result, currentPage, totalCount ] = await Promise.all( [ this.productRepo.find( conditions )
@@ -197,10 +187,10 @@ export class ProductService extends GenericService<Product> {
         }
         else if ( query.sort === 'new' )
         {
-            const [ result, currentPage, totalCount ] = await Promise.all( [ this.productRepo.find( query )
+            const [ result, currentPage, totalCount ] = await Promise.all( [ this.productRepo.find( conditions )
                 .populate( [ 'BrandId', 'CardId', 'HardDriveId', 'RAMId', 'ScreenId', 'SeriesId', 'SpectId', 'CPUId' ] )
                 .sort( { createAt: 1 } ).skip( ( query.page - 1 ) * query.limit )
-                .limit( query.limit ), query.page, ( await this.productRepo.find( query ) ).length ] )
+                .limit( query.limit ), query.page, ( await this.productRepo.find( conditions ) ).length ] )
             return {
                 data: result,
                 currentPage: Number( currentPage ),
