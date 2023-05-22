@@ -1,20 +1,15 @@
 import { IsDate, IsNumber, IsString } from 'class-validator';
 
-export class productSaleDto {
-    @IsNumber()
-    private _id: number;
+export interface productSaleDto {
+    _id: number;
 
-    @IsString()
-    private name: string;
+    name: string;
 
-    @IsString()
-    private imgUrl: string;
+    imgUrl: string;
 
-    @IsNumber()
-    private Price: number;
+    Price: number;
 
-    @IsNumber()
-    private PriceSales: number;
+    PriceSales: number;
 
-    private isSale: boolean;
+    isSale: boolean;
 }

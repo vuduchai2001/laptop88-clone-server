@@ -20,44 +20,49 @@ export class ProductService extends GenericService<Product> {
         super( productRepo );
     }
 
-    async getSaleProduct ( product: productSaleDto ): Promise<productSaleDto[]> {
-        return await this.productRepo.find();
+    async getProductBySeries ( SeriesId: number ) {
+        return await this.productRepo.find( { SeriesId } );
+    }
+
+    async getSaleProduct () {
+        const data = await this.productRepo.find( { isSale: true } );
+        const result: productSaleDto[] = data.map( ( item ) => ( {
+            _id: item._id,
+            name: item.name,
+            Price: item.Price,
+            PriceSales: item.PriceSales,
+            imgUrl: item.imgUrl,
+            isSale: item.isSale,
+        } ) );
+        return result;
     }
 
     async filter ( query: any ) {
-
         const conditions: any = {};
-
         if ( query.name )
         {
             conditions.name = { $regex: new RegExp( query.name, 'i' ) };
         };
-
         if ( query.isSale )
         {
             conditions.isSale = query.isSale;
         };
-
         if ( query.isOld )
         {
             conditions.isOld = query.isOld;
         };
-
         if ( query.Price )
         {
             conditions.Price = { $gte: query.Price, $lte: query.Pricemax };
         };
-
         if ( query.PriceSales )
         {
             conditions.PriceSales = { $gte: query.PriceSales, $lte: query.PriceSalesmax };
         };
-
         if ( query.BrandId )
         {
             conditions.BrandId = query.BrandId;
         };
-
         if ( query.CardId )
         {
             let arr = [];
@@ -93,12 +98,10 @@ export class ProductService extends GenericService<Product> {
             }
             conditions.CPUId = result;
         };
-
         if ( query.RAMId )
         {
             conditions.RAMId = query.RAMId;
         };
-
         if ( query.ScreenId )
         {
             let arr = [];
@@ -116,35 +119,28 @@ export class ProductService extends GenericService<Product> {
             }
             conditions.ScreenId = result;
         };
-
         if ( query.SeriesId )
         {
             conditions.SeriesId = query.SeriesId;
         };
-
         if ( query.SpectId )
         {
             conditions.SpectId = query.SpectId;
         };
-
         if ( query.HardDriveId )
         {
             conditions.HardDriveId = query.HardDriveId;
         };
-
         if ( !query.page )
         {
             query.page = 1;
         };
-
         if ( !query.sort )
         {
             query.sort = 'new';
         };
-
         query.limit = 5;
         console.log( query );
-
         if ( query.sort === 'asc' )
         {
             const [ result, currentPage, totalCount ] = await Promise.all( [ this.productRepo.find( conditions )
